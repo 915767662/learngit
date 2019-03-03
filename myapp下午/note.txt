@@ -1,0 +1,94 @@
+1、react的脚手架
+  https://facebook.github.io/create-react-app/docs/getting-started
+
+  首先如果自己的电脑中含有create-react-app的全局安装过的，先通过npm uninstall create-react-app -g卸载掉
+
+2、创建项目
+  npx create-react-app myapp
+  找了半天，没有发现webpack的相关配置，脚手架默认的配置文件在react-scripts模块内，可以再node_modules/react-scripts中找到 ？？？ 这样真的好吗？
+  react为了开发者能够配置一些文件，提供了一个抽离配置文件的指令
+  打开package.json文件中发现scripts选项中有一个指令 eject, 这个操作时不可逆的
+  npm run eject
+3、运行项目
+  cd myapp
+  npm run start
+  http://localhost:3000
+4、调整目录结构
+  src
+    -api
+    -components
+    -layout
+      App.js
+    -pages
+    index.js
+    logo.svg
+    serverWorker.js
+  整合代码
+    发现引入的代码的后缀不能识别，@符号不能识别
+    修改config/webpack.config.js文件，添加如下配置
+    resolve: { // 省略的后缀名和别名
+      extensions: ['.js', '.scss', '.jsx'], // 如果模块的后缀名为.js，可以省略不写
+      alias: {
+        '@': path.join(__dirname, '../', 'src')
+      }
+    },
+5、重定向
+  import { Redirect } from 'rect-router-dom'
+
+  <Redirect path="/" to="/home" />
+6、函数式组件  --- 使用es6的箭头函数实现定义组件 ---- components/home/List.jsx
+  ---- 子组件可以使用函数是组件
+  const Com = (props) => {
+    return ()
+  }
+  const Com = (props) => ()
+
+  类型的校验
+  cnpm i prop-types -D
+  import PropTypes from 'prop-types';
+  List.propTypes = {
+    list: PropTypes.array
+  }
+7、Home.jsx中请求数据
+  1、api/home/index.js处写请求数据的方法 ---- promise
+    api/index.js        -----------------   baseUrl    ------   统一处理请求
+  2、pages/Home.jsx处componentDidMount()调用api.requestData()拿到数据
+    调用this.setState()改变list的值
+    Home.jsx处调用List组件并且传值
+    <List list = { this.state.list }/>
+8、列表进入详情
+  components/home/List.jsx处使用Link来完成路由的跳转
+     <Link to = { '/detail/' + item.id } key = { item.id }></Link>
+9、详情页面渲染数据  pages/Detail.jsx
+    通过this.props.match.params.id拿到点击的那个数据的id，通过id的值再请求数据，渲染数据
+10、UI库
+  PC端
+    Ant Design: https://ant.design/index-cn
+    element-UI: https://elemefe.github.io/element-react/
+  移动端
+    Ant Design Mobile: https://mobile.ant.design/index-cn
+    Material-UI: https://material-ui.com/
+  1、安装
+    cnpm i antd-mobile -S
+  2、移动端相关设置
+    引入 FastClick 并且设置 html meta (更多参考 #576)
+    引入 Promise 的 fallback 支持 (部分安卓手机不支持 Promise)
+    public/index.html代码出head区域加入如下代码
+      <script src="https://as.alipayobjects.com/g/component/fastclick/1.0.6/fastclick.js"></script>
+    <script>
+      if ('addEventListener' in document) {
+        document.addEventListener('DOMContentLoaded', function() {
+          FastClick.attach(document.body);
+        }, false);
+      }
+      if(!window.Promise) {
+        document.writeln('<script src="https://as.alipayobjects.com/g/component/es6-promise/3.2.2/es6-promise.min.js"'+'>'+'<'+'/'+'script>');
+      }
+    </script>
+  3、安装依赖
+    cnpm i babel-plugin-import -D     ---- 按需加载
+  4、修改.babelrc文件或者babel-loader的配置项
+    在webpack.config.js中babel-loader的配置项默认吧babelrc设置为false，所以此处不考虑使用外置的babelrc，在选项中添加如下代码（364    374）
+    plugins: [
+      ["import", { libraryName: "antd-mobile", style: "css" }] // `style: true` 会加载 less 文件
+    ]

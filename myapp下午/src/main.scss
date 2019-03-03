@@ -1,0 +1,37 @@
+@import '@/qunar/reset.scss';
+html, body, #root, .box {
+  @include rect(100%, 100%);
+}
+
+.box {
+  @include flexbox();
+  @include flex-direction(column);
+  .header {
+    @include rect(100%, 0.44rem);
+    @include background-color(#f66);
+  }
+  .content {
+    @include flex();
+    @include rect(100%, auto);
+    @include overflow();
+  }
+  .footer {
+    @include rect(100%, 0.5rem);
+    @include background-color(#eee);
+    ul {
+      @include rect(100%, 100%);
+      @include flexbox();
+      a {
+        @include flex();
+        @include rect(auto, 100%);
+        @include flexbox();
+        @include justify-content();
+        @include align-items();
+
+        &.active {
+          @include color(#f66);
+        }
+      }
+    }
+  }
+}
